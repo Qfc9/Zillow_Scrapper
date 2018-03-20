@@ -5,7 +5,7 @@ import ssl
 context = ssl._create_unverified_context()
 
 def paginate_url(url, idx):
-    return "".join([url, str(idx), "/0_mmm/"])
+    return "".join([url, str(idx), "_p/0_mmm/"])
 
 def clean_phone(phone):
     cleaned = []
@@ -27,7 +27,7 @@ def get_data(page, sStr, eStr):
     return page[start:end]
 
 def load_page(url):
-    user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36'
+    user_agent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36'
     # user_agent = 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)'
     headers = { 'User-Agent' : user_agent }
 

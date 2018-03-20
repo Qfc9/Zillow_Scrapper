@@ -1,5 +1,7 @@
 import csv
 from page_util import *
+import webbrowser
+from time import sleep
 
 def loader():
     try:
@@ -43,15 +45,16 @@ def scrapper(url, oldHouses, msg):
     pageCounter = get_page_count(the_page)
     houses = []
 
-    links = get_links(the_page)
+    # links = get_links(the_page)
 
-    # links = []
-    # for p_num in range(1, pageCounter):
-    #     the_page = load_page(paginate_url(url, p_num))
-    #     links += get_links(the_page)
+    links = []
+    for p_num in range(1, pageCounter):
+        the_page = load_page(paginate_url(url, p_num))
+        links += get_links(the_page)
 
     for idx, link in enumerate(links):
         print(idx + 1, "of", len(links))
+        sleep(1)
         house = {}
         house["link"] = 'https://www.zillow.com' + link
         the_page = load_page(house["link"])
@@ -72,6 +75,11 @@ def scrapper(url, oldHouses, msg):
 
     return houses
 
+
+def remove_houses(houses, msg):
+    if houses:
+        for house in houses:
+            msg.append("Removed House - " + house["addr1"] + house["addr2"])
 
 def save_houses(houses):
     with open('house.csv', 'w', newline='') as csvfile:

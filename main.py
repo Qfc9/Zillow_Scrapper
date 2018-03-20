@@ -16,6 +16,8 @@ def main():
     houses += scrapper(pierceCounter, loadedHouses, msg)
     save_houses(houses)
 
+    remove_houses(loadedHouses, msg)
+
     if msg:
         print("\n", len(msg), "Changes")
         print("\n".join(msg))
