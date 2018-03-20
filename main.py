@@ -6,7 +6,14 @@ pierceCounter = "https://www.zillow.com/homes/fsbo/Pierce-County-WA/1322_rid/glo
 
 
 def main():
-    scrapper(kingCounty)
-    scrapper(pierceCounter)
+    houses = loader()
+    for house in houses:
+        print(house["addr1"])
+        print(house["addr2"])
+        print(house["price"])
+        print(house["phone"])
+        print(house["days"])
+    # scrapper(kingCounty)
+    # scrapper(pierceCounter)
 
 main()

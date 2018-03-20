@@ -1,6 +1,24 @@
 import csv
 from page_util import *
 
+def loader():
+    with open('house.csv', 'r', newline='') as csvfile:
+        houseCSV = csv.reader(csvfile, delimiter='\t')
+        houses = []
+        house = {}
+        ignoreHeader = True
+        for row in houseCSV:
+            if ignoreHeader:
+                ignoreHeader = False
+                continue
+            house["addr1"] = row[0]
+            house["addr2"] = row[1]
+            house["price"] = row[2]
+            house["phone"] = row[3]
+            house["days"] = row[4]
+            house["link"] = row[5]
+            houses.append(house)
+        return houses
 
 def scrapper(url):
     the_page = load_page(paginate_url(url, 1))
@@ -41,6 +59,6 @@ def scrapper(url):
     with open('house.csv', 'w', newline='') as csvfile:
         houseCSV = csv.writer(csvfile, delimiter='\t')
 
-        houseCSV.writerow(["addr1", "addr2", "price", "phone", "days", "link"])
+        houseCSV.writerow(["Address 1", "Address 2", "Price", "Phone Number", "Days on Zillow", "URL"])
         for house in houses:
             houseCSV.writerow([house["addr1"], house["addr2"], house["price"], house["phone"], house["days"], house["link"]])
