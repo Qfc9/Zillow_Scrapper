@@ -1,11 +1,10 @@
-
-# https://www.zillow.com/homes/fsbo/King-County-WA/207_rid/globalrelevanceex_sort/48.167917,-120.653229,46.687131,-122.954865_rect/8_zm/0_mmm/
+#!/Library/Frameworks/Python.framework/Versions/3.6/bin/python3
 
 import csv
-import urllib.parse
-import urllib.request
+from page_util import *
 
 def main():
+    # https://www.zillow.com/homes/fsbo/Pierce-County-WA/1322_rid/globalrelevanceex_sort/47.62838,-121.235505,46.500282,-122.993317_rect/8_zm/0_mmm/
     the_page = load_page('https://www.zillow.com/homes/fsbo/King-County-WA/207_rid/globalrelevanceex_sort/48.167917,-120.653229,46.687131,-122.954865_rect/8_zm/0_mmm/')
     pageCounter = get_page_count(the_page)
     houses = []
@@ -48,56 +47,5 @@ def main():
         for house in houses:
             houseCSV.writerow([house["addr1"], house["addr2"], house["price"], house["phone"], house["days"], house["link"]])
 
-def clean_phone(phone):
-    cleaned = []
-    for c in phone:
-        if c.isdigit() or c in ["(", ")", "-", " "]:
-            cleaned.append(c)
-
-    return "".join(cleaned)
-
-def get_data(page, sStr, eStr):
-    start = page.find(sStr)
-    if start == -1:
-        return "Not Found"
-    else:
-        start += len(sStr)
-    end = page.find(eStr, start)
-    if end == -1:
-        return "Not Found"
-    return page[start:end]
-
-def load_page(url):
-    user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36'
-    # user_agent = 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)'
-    headers = { 'User-Agent' : user_agent }
-
-    # data = urllib.parse.urlencode(values)
-    req = urllib.request.Request(url, None, headers)
-    response = urllib.request.urlopen(req)
-    return str(response.read())
-
-def get_page_count(page):
-    pageCounter = 1
-    startPages = page.index('<div id="search-pagination-wrapper" class="zsg-content-item">')
-    endPages = page.index("</ol>")
-    while page.find('<li>', startPages, endPages) != -1:
-        pageCounter += 1
-        startPages = page.index('</li>', startPages, endPages) + 5
-
-    return pageCounter
-
-def get_links(page):
-    start = page.index('<ul class="photo-cards">')
-    end = page.index('</ul>', start)
-    links = []
-
-    while page.find('href="', end) != -1:
-        start = (page.index('href="', start) + 6)
-        end = page.index('"', start)
-        if page.find("homedetails", start, end) != -1:
-            links.append(page[start:end])
-
-    return links
 
 main()
