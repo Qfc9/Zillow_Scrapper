@@ -2,25 +2,43 @@ import csv
 from page_util import *
 
 def loader():
-    with open('house.csv', 'r', newline='') as csvfile:
-        houseCSV = csv.reader(csvfile, delimiter='\t')
-        houses = []
-        house = {}
-        ignoreHeader = True
-        for row in houseCSV:
-            if ignoreHeader:
-                ignoreHeader = False
-                continue
-            house["addr1"] = row[0]
-            house["addr2"] = row[1]
-            house["price"] = row[2]
-            house["phone"] = row[3]
-            house["days"] = row[4]
-            house["link"] = row[5]
-            houses.append(house)
+    try:
+        with open('house.csv', 'r', newline='') as csvfile:
+            houseCSV = csv.reader(csvfile, delimiter='\t')
+            houses = []
+            ignoreHeader = True
+            for row in houseCSV:
+                house = {}
+                if ignoreHeader:
+                    ignoreHeader = False
+                    continue
+                house["addr1"] = row[0]
+                house["addr2"] = row[1]
+                house["price"] = row[2]
+                house["phone"] = row[3]
+                house["days"] = row[4]
+                house["link"] = row[5]
+                houses.append(house)
         return houses
+    except:
+        return []
 
-def scrapper(url):
+def find_house(houses, newHouse, msg):
+    for idx, house in enumerate(houses):
+        if house["link"] == newHouse["link"]:
+
+            if house["price"] != newHouse["price"]:
+                msg.append("Changed Price - " + house["addr1"] + house["addr2"])
+            if house["phone"] != newHouse["phone"]:
+                msg.append("Changed Phone Number - " + house["addr1"] + house["addr2"])
+            if house["days"] != newHouse["days"]:
+                msg.append("Changed Days on Zillow - " + house["addr1"] + house["addr2"])
+
+            houses.pop(idx)
+            return True
+    return False
+
+def scrapper(url, oldHouses, msg):
     the_page = load_page(paginate_url(url, 1))
     pageCounter = get_page_count(the_page)
     houses = []
@@ -41,21 +59,21 @@ def scrapper(url):
         house["addr2"] = get_data(the_page, '<span class="zsg-h2 addr_city">', '</span>')
         house["price"] = get_data(the_page, 'class="main-row  home-summary-row">   <span class=""> ', ' <span class="value-suffix">')
         house["phone"] = clean_phone(get_data(the_page, 'Property Owner</span>            <span class="snl phone">', '</span>'))
-        house["days"] = get_data(the_page, 'Days on Zillow</p>', 'Days')
+        house["days"] = get_data(the_page, 'Days on Zillow: </span><span class="hdp-fact-value">', '</span>')
         if house["days"].find(">") != -1:
             house["days"] = house["days"][house["days"].find(">") + 1:]
         if house["days"].find("<") != -1:
             house["days"] = house["days"][:house["days"].find("<")]
 
+
+        if not find_house(oldHouses, house, msg):
+            msg.append("New House - " + house["addr1"] + house["addr2"])
         houses.append(house)
 
-    for house in houses:
-        print(house["addr1"])
-        print(house["addr2"])
-        print(house["price"])
-        print(house["phone"])
-        print(house["days"])
+    return houses
 
+
+def save_houses(houses):
     with open('house.csv', 'w', newline='') as csvfile:
         houseCSV = csv.writer(csvfile, delimiter='\t')
 
