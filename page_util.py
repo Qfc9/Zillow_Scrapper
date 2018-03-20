@@ -4,6 +4,9 @@ import ssl
 
 context = ssl._create_unverified_context()
 
+def paginate_url(url, idx):
+    return "".join([url, str(idx), "/0_mmm/"])
+
 def clean_phone(phone):
     cleaned = []
     for c in phone:
